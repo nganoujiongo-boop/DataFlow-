@@ -1,0 +1,199 @@
+{% extends "base.html" %}
+{% block title %}Collecte — {{ info.label }}{% endblock %}
+
+{% block extra_css %}
+<style>
+.page-header {
+  display: flex; align-items: center; gap: 1.5rem;
+  padding: 2rem 0 1.5rem;
+  border-bottom: 1px solid var(--border); margin-bottom: 2rem;
+}
+.domain-icon-lg {
+  width: 60px; height: 60px; border-radius: 16px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.8rem; background: var(--domain-color-bg);
+  border: 1px solid var(--domain-color);
+}
+.page-header h1 { font-family:'Syne',sans-serif; font-size:1.8rem; }
+.page-header p { color:var(--muted); font-size:0.9rem; margin-top:0.3rem; }
+
+.form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.2rem; }
+.form-group { display: flex; flex-direction: column; gap: 0.5rem; }
+.form-group label { font-size: 0.85rem; font-weight: 500; color: var(--muted); }
+.form-group label span { color: #ef4444; }
+.form-control {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 10px; padding: 0.7rem 1rem;
+  color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.9rem;
+  transition: border-color 0.2s; outline: none; width: 100%;
+}
+.form-control:focus { border-color: var(--domain-color); }
+.form-control option { background: var(--surface2); }
+
+.form-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem; margin-bottom: 1.5rem; }
+.form-card h3 { font-family:'Syne',sans-serif; font-size:1rem; margin-bottom:1.2rem; display:flex;align-items:center;gap:0.5rem; }
+.form-card h3::after { content:''; flex:1; height:1px; background:var(--border); }
+
+.btn-submit {
+  background: var(--domain-color); color: #fff;
+  border: none; border-radius: 10px; padding: 0.9rem 2rem;
+  font-family:'DM Sans',sans-serif; font-size:1rem; font-weight:600;
+  cursor:pointer; display:flex;align-items:center;gap:0.5rem;
+  transition: all 0.2s; width:100%;justify-content:center;
+}
+.btn-submit:hover { filter:brightness(1.1); transform:translateY(-1px); }
+.btn-submit:disabled { opacity:0.5; cursor:not-allowed; transform:none; }
+
+.success-popup {
+  position:fixed; top:2rem; right:2rem; z-index:1000;
+  background:#052e16; border:1px solid #16a34a; border-radius:12px;
+  padding:1rem 1.5rem; display:none; align-items:center; gap:1rem;
+  max-width:360px; box-shadow:0 20px 40px rgba(0,0,0,0.5);
+  animation: slideIn 0.3s ease;
+}
+.success-popup.show { display:flex; }
+@keyframes slideIn { from { transform:translateX(100px); opacity:0; } }
+.success-popup i { color:#22c55e; font-size:1.5rem; }
+.success-popup h4 { color:#86efac; font-size:0.95rem; margin-bottom:0.2rem; }
+.success-popup p { color:#4ade80; font-size:0.8rem; }
+
+.progress-bar { height:4px; background:var(--domain-color); border-radius:2px; margin-bottom:2rem; transition:width 0.3s; }
+.required-note { color:var(--muted); font-size:0.82rem; margin-bottom:1rem; }
+.required-note span { color:#ef4444; }
+</style>
+{% endblock %}
+
+{% block content %}
+{% set colors = {'sante': '#e74c3c', 'education': '#3b82f6', 'agriculture': '#22c55e'} %}
+{% set color = colors[domain] %}
+<style>:root{--domain-color:{{ color }};--domain-color-bg:{{ color }}15;}</style>
+
+<div class="page-header">
+  <div class="domain-icon-lg">{{ info.label.split(' ')[0] }}</div>
+  <div>
+    <h1>{{ info.label }} — Saisie de données</h1>
+    <p>{{ info.description }}</p>
+  </div>
+</div>
+
+<div class="progress-bar" id="progressBar" style="width:0%"></div>
+<p class="required-note">Les champs marqués <span>*</span> sont obligatoires.</p>
+
+<form id="dataForm">
+  <div class="form-card">
+    <h3>Informations générales</h3>
+    <div class="form-grid">
+      {% for field in info.fields[:5] %}
+      <div class="form-group">
+        <label for="{{ field.name }}">
+          {{ field.label }}{% if field.required %} <span>*</span>{% endif %}
+        </label>
+        {% if field.type == 'select' %}
+        <select name="{{ field.name }}" id="{{ field.name }}" class="form-control" {% if field.required %}required{% endif %}>
+          <option value="">-- Sélectionner --</option>
+          {% for opt in field.options %}
+          <option value="{{ opt }}">{{ opt }}</option>
+          {% endfor %}
+        </select>
+        {% else %}
+        <input type="number" name="{{ field.name }}" id="{{ field.name }}"
+               class="form-control" placeholder="Entrez une valeur"
+               step="any" {% if field.required %}required{% endif %}>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="form-card">
+    <h3>Données spécifiques</h3>
+    <div class="form-grid">
+      {% for field in info.fields[5:] %}
+      <div class="form-group">
+        <label for="{{ field.name }}">
+          {{ field.label }}{% if field.required %} <span>*</span>{% endif %}
+        </label>
+        {% if field.type == 'select' %}
+        <select name="{{ field.name }}" id="{{ field.name }}" class="form-control" {% if field.required %}required{% endif %}>
+          <option value="">-- Sélectionner --</option>
+          {% for opt in field.options %}
+          <option value="{{ opt }}">{{ opt }}</option>
+          {% endfor %}
+        </select>
+        {% else %}
+        <input type="number" name="{{ field.name }}" id="{{ field.name }}"
+               class="form-control" placeholder="Entrez une valeur"
+               step="any" {% if field.required %}required{% endif %}>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div style="display:flex;gap:1rem;align-items:center;">
+    <button type="submit" class="btn-submit" id="submitBtn">
+      <i class="fas fa-paper-plane"></i> Enregistrer les données
+    </button>
+    <a href="/analyse/{{ domain }}" class="btn btn-outline">
+      <i class="fas fa-chart-bar"></i> Voir l'analyse
+    </a>
+    <a href="/" class="btn btn-outline">
+      <i class="fas fa-arrow-left"></i> Accueil
+    </a>
+  </div>
+</form>
+
+<!-- Success popup -->
+<div class="success-popup" id="successPopup">
+  <i class="fas fa-check-circle"></i>
+  <div>
+    <h4>Données enregistrées !</h4>
+    <p id="successMsg">Entrée sauvegardée avec succès.</p>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+const form = document.getElementById('dataForm');
+const btn = document.getElementById('submitBtn');
+const bar = document.getElementById('progressBar');
+
+// Progress indicator
+const inputs = form.querySelectorAll('.form-control');
+inputs.forEach(i => i.addEventListener('change', updateProgress));
+
+function updateProgress() {
+  const filled = [...inputs].filter(i => i.value.trim() !== '').length;
+  bar.style.width = (filled / inputs.length * 100) + '%';
+}
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Envoi en cours...';
+
+  const data = new FormData(form);
+
+  try {
+    const res = await fetch('/submit/{{ domain }}', { method: 'POST', body: data });
+    const json = await res.json();
+
+    if (json.success) {
+      const popup = document.getElementById('successPopup');
+      document.getElementById('successMsg').textContent =
+        `ID: ${json.id} — Total dans la base: ${json.total} entrée(s)`;
+      popup.classList.add('show');
+      form.reset();
+      bar.style.width = '0%';
+      setTimeout(() => popup.classList.remove('show'), 4000);
+    } else {
+      alert('Erreur: ' + json.error);
+    }
+  } catch(err) {
+    alert('Erreur de connexion.');
+  }
+
+  btn.disabled = false;
+  btn.innerHTML = '<i class="fas fa-paper-plane"></i> Enregistrer les données';
+});
+{% endblock %}

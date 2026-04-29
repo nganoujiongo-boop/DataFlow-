@@ -1,0 +1,278 @@
+{% extends "base.html" %}
+{% block title %}Analyse — {{ info.label }}{% endblock %}
+
+{% block extra_css %}
+<style>
+{% set colors = {'sante': '#e74c3c', 'education': '#3b82f6', 'agriculture': '#22c55e'} %}
+:root { --domain-color: {{ colors[domain] }}; }
+
+.page-header {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:2rem 0 1.5rem; border-bottom:1px solid var(--border); margin-bottom:2rem;
+  flex-wrap:wrap; gap:1rem;
+}
+.page-header-left { display:flex; align-items:center; gap:1.5rem; }
+.domain-icon-lg {
+  width:60px; height:60px; border-radius:16px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:1.8rem; background:{{ colors[domain] }}15;
+  border:1px solid {{ colors[domain] }};
+}
+.page-header h1 { font-family:'Syne',sans-serif; font-size:1.8rem; }
+.page-header p { color:var(--muted); font-size:0.9rem; margin-top:0.3rem; }
+
+.kpi-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:1rem; margin-bottom:2rem; }
+.kpi { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:1.2rem; }
+.kpi-value { font-family:'Syne',sans-serif; font-size:2rem; font-weight:700; color:var(--domain-color); }
+.kpi-label { font-size:0.8rem; color:var(--muted); margin-top:0.2rem; }
+
+.analysis-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(400px,1fr)); gap:1.5rem; margin-bottom:2rem; }
+.chart-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:1.5rem; }
+.chart-card h3 { font-family:'Syne',sans-serif; font-size:1rem; margin-bottom:1.2rem; color:var(--muted); }
+.chart-card canvas { width:100% !important; }
+
+.stat-table { width:100%; border-collapse:collapse; font-size:0.85rem; }
+.stat-table th { color:var(--muted); font-weight:500; text-align:left; padding:0.6rem; border-bottom:1px solid var(--border); }
+.stat-table td { padding:0.6rem; border-bottom:1px solid rgba(255,255,255,0.03); }
+.stat-table tr:hover td { background:var(--surface2); }
+
+.freq-bar { display:flex; align-items:center; gap:0.8rem; margin-bottom:0.6rem; }
+.freq-label { font-size:0.82rem; width:140px; flex-shrink:0; color:var(--muted); }
+.freq-track { flex:1; background:var(--surface2); border-radius:4px; height:8px; overflow:hidden; }
+.freq-fill { height:100%; border-radius:4px; background:var(--domain-color); transition:width 0.8s cubic-bezier(0.34,1.56,0.64,1); }
+.freq-pct { font-size:0.78rem; color:var(--muted); width:40px; text-align:right; flex-shrink:0; }
+
+.no-data {
+  text-align:center; padding:4rem; color:var(--muted);
+}
+.no-data i { font-size:3rem; margin-bottom:1rem; display:block; opacity:0.3; }
+.no-data a { color:var(--domain-color); }
+
+.data-table-wrap { overflow-x:auto; }
+.data-table { width:100%; border-collapse:collapse; font-size:0.82rem; }
+.data-table th { background:var(--surface2); color:var(--muted); font-weight:500; padding:0.7rem 0.8rem; text-align:left; white-space:nowrap; }
+.data-table td { padding:0.6rem 0.8rem; border-bottom:1px solid var(--border); }
+.data-table tr:hover td { background:var(--surface2); }
+
+.tabs { display:flex; gap:0.5rem; margin-bottom:1.5rem; flex-wrap:wrap; }
+.tab { padding:0.5rem 1.2rem; border-radius:8px; border:1px solid var(--border); background:transparent; color:var(--muted); cursor:pointer; font-size:0.85rem; transition:all 0.2s; }
+.tab.active { background:var(--domain-color); color:#fff; border-color:var(--domain-color); }
+.tab-content { display:none; }
+.tab-content.active { display:block; }
+</style>
+{% endblock %}
+
+{% block content %}
+{% set colors = {'sante': '#e74c3c', 'education': '#3b82f6', 'agriculture': '#22c55e'} %}
+{% set color = colors[domain] %}
+
+<div class="page-header">
+  <div class="page-header-left">
+    <div class="domain-icon-lg">{{ info.label.split(' ')[0] }}</div>
+    <div>
+      <h1>{{ info.label }} — Analyse descriptive</h1>
+      <p>{{ info.description }}</p>
+    </div>
+  </div>
+  <div style="display:flex;gap:0.7rem;flex-wrap:wrap;">
+    <a href="/collect/{{ domain }}" class="btn btn-primary"><i class="fas fa-plus"></i> Saisir</a>
+    <a href="/api/export/{{ domain }}" class="btn btn-outline"><i class="fas fa-download"></i> CSV</a>
+    <a href="/" class="btn btn-outline"><i class="fas fa-home"></i></a>
+  </div>
+</div>
+
+{% if not stats %}
+<div class="no-data">
+  <i class="fas fa-inbox"></i>
+  <h3>Aucune donnée disponible</h3>
+  <p>Commencez par <a href="/collect/{{ domain }}">saisir des données</a> pour voir l'analyse.</p>
+</div>
+{% else %}
+
+<div class="kpi-grid">
+  <div class="kpi">
+    <div class="kpi-value">{{ stats.total }}</div>
+    <div class="kpi-label">Entrées totales</div>
+  </div>
+  {% for col, s in stats.numeric.items() %}
+  {% if loop.index <= 3 %}
+  <div class="kpi">
+    <div class="kpi-value">{{ s.mean }}</div>
+    <div class="kpi-label">Moy. {{ col | replace('_', ' ') }}</div>
+  </div>
+  {% endif %}
+  {% endfor %}
+</div>
+
+<!-- Tabs -->
+<div class="tabs">
+  <button class="tab active" onclick="showTab('stats')">📊 Statistiques</button>
+  <button class="tab" onclick="showTab('charts')">📈 Graphiques</button>
+  <button class="tab" onclick="showTab('recent')">🗂 Données récentes</button>
+</div>
+
+<!-- Tab: Statistics -->
+<div class="tab-content active" id="tab-stats">
+  {% if stats.numeric %}
+  <div class="chart-card" style="margin-bottom:1.5rem;">
+    <h3>Variables numériques — Statistiques descriptives</h3>
+    <table class="stat-table">
+      <thead>
+        <tr>
+          <th>Variable</th><th>Moyenne</th><th>Médiane</th><th>Écart-type</th>
+          <th>Min</th><th>Q1</th><th>Q3</th><th>Max</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for col, s in stats.numeric.items() %}
+        <tr>
+          <td style="font-weight:500;color:{{ color }}">{{ col | replace('_', ' ') | title }}</td>
+          <td>{{ s.mean }}</td><td>{{ s.median }}</td><td>{{ s.std }}</td>
+          <td>{{ s.min }}</td><td>{{ s.q1 }}</td><td>{{ s.q3 }}</td><td>{{ s.max }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+
+  {% for col, freqs in stats.categorical.items() %}
+  <div class="chart-card" style="margin-bottom:1rem;">
+    <h3>{{ col | replace('_', ' ') | title }} — Distribution des fréquences</h3>
+    {% for val, f in freqs.items() %}
+    <div class="freq-bar">
+      <span class="freq-label">{{ val }}</span>
+      <div class="freq-track">
+        <div class="freq-fill" style="width:{{ f.pct }}%"></div>
+      </div>
+      <span class="freq-pct">{{ f.pct }}%</span>
+    </div>
+    {% endfor %}
+  </div>
+  {% endfor %}
+</div>
+
+<!-- Tab: Charts -->
+<div class="tab-content" id="tab-charts">
+  <div class="analysis-grid">
+    {% for col, s in stats.numeric.items() %}
+    {% if loop.index <= 4 %}
+    <div class="chart-card">
+      <h3>{{ col | replace('_', ' ') | title }} — Distribution</h3>
+      <canvas id="chart_{{ col }}" height="200"></canvas>
+    </div>
+    {% endif %}
+    {% endfor %}
+
+    {% for col, freqs in stats.categorical.items() %}
+    {% if loop.index <= 2 %}
+    <div class="chart-card">
+      <h3>{{ col | replace('_', ' ') | title }} — Répartition</h3>
+      <canvas id="pie_{{ col }}" height="200"></canvas>
+    </div>
+    {% endif %}
+    {% endfor %}
+  </div>
+</div>
+
+<!-- Tab: Recent Data -->
+<div class="tab-content" id="tab-recent">
+  <div class="chart-card">
+    <h3>10 derniers enregistrements</h3>
+    {% if data %}
+    <div class="data-table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>ID</th><th>Date</th>
+            {% for f in fields[:6] %}<th>{{ f.label }}</th>{% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in data | reverse %}
+          <tr>
+            <td style="color:{{ color }};font-family:monospace">{{ row.id }}</td>
+            <td style="color:var(--muted)">{{ row.timestamp }}</td>
+            {% for f in fields[:6] %}
+            <td>{{ row.get(f.name, '—') }}</td>
+            {% endfor %}
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <p style="color:var(--muted)">Aucune donnée.</p>
+    {% endif %}
+  </div>
+</div>
+
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+// Tabs
+function showTab(name) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  event.target.classList.add('active');
+}
+
+{% if stats %}
+// Load Chart.js and draw charts
+const script = document.createElement('script');
+script.src = 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js';
+script.onload = drawCharts;
+document.head.appendChild(script);
+
+const DOMAIN_COLOR = '{{ color }}';
+const statsData = {{ stats | tojson }};
+
+function drawCharts() {
+  Chart.defaults.color = '#6b7280';
+  Chart.defaults.borderColor = 'rgba(255,255,255,0.07)';
+
+  // Numeric — bar charts (box plot style)
+  for (const [col, s] of Object.entries(statsData.numeric || {})) {
+    const el = document.getElementById('chart_' + col);
+    if (!el) continue;
+    new Chart(el, {
+      type: 'bar',
+      data: {
+        labels: ['Min', 'Q1', 'Médiane', 'Moyenne', 'Q3', 'Max'],
+        datasets: [{
+          label: col,
+          data: [s.min, s.q1, s.median, s.mean, s.q3, s.max],
+          backgroundColor: DOMAIN_COLOR + '50',
+          borderColor: DOMAIN_COLOR,
+          borderWidth: 2,
+          borderRadius: 6
+        }]
+      },
+      options: { plugins: { legend: { display: false } }, scales: { y: { grid: { color: 'rgba(255,255,255,0.05)' } }, x: { grid: { display: false } } } }
+    });
+  }
+
+  // Categorical — pie/doughnut charts
+  const catEntries = Object.entries(statsData.categorical || {});
+  for (const [col, freqs] of catEntries.slice(0, 2)) {
+    const el = document.getElementById('pie_' + col);
+    if (!el) continue;
+    const labels = Object.keys(freqs);
+    const values = Object.values(freqs).map(f => f.count);
+    const palette = ['#e74c3c','#3b82f6','#22c55e','#f59e0b','#a855f7','#06b6d4','#f97316','#ec4899','#84cc16','#8b5cf6'];
+    new Chart(el, {
+      type: 'doughnut',
+      data: {
+        labels,
+        datasets: [{ data: values, backgroundColor: palette, borderWidth: 0 }]
+      },
+      options: {
+        plugins: { legend: { position: 'right', labels: { boxWidth: 12, font: { size: 11 } } } }
+      }
+    });
+  }
+}
+{% endif %}
+{% endblock %}

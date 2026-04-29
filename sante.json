@@ -1,0 +1,72 @@
+[
+  {
+    "age": "35",
+    "sexe": "Masculin",
+    "region": "Centre",
+    "poids": "75",
+    "taille": "175",
+    "tension_sys": "120",
+    "tension_dia": "80",
+    "pathologie": "Hypertension",
+    "acces_soin": "Bon",
+    "assurance": "CNPS",
+    "id": "51bde4c8",
+    "timestamp": "2026-04-29 08:06:28"
+  },
+  {
+    "age": "35",
+    "sexe": "Masculin",
+    "region": "Centre",
+    "poids": "75",
+    "taille": "175",
+    "tension_sys": "120",
+    "tension_dia": "80",
+    "pathologie": "Hypertension",
+    "acces_soin": "Bon",
+    "assurance": "CNPS",
+    "id": "91d96b30",
+    "timestamp": "2026-04-29 08:06:28"
+  },
+  {
+    "age": "35",
+    "sexe": "Masculin",
+    "region": "Centre",
+    "poids": "75",
+    "taille": "175",
+    "tension_sys": "120",
+    "tension_dia": "80",
+    "pathologie": "Hypertension",
+    "acces_soin": "Bon",
+    "assurance": "CNPS",
+    "id": "9cf2f6f4",
+    "timestamp": "2026-04-29 08:06:28"
+  },
+  {
+    "age": "35",
+    "sexe": "Masculin",
+    "region": "Centre",
+    "poids": "75",
+    "taille": "175",
+    "tension_sys": "120",
+    "tension_dia": "80",
+    "pathologie": "Hypertension",
+    "acces_soin": "Bon",
+    "assurance": "CNPS",
+    "id": "51b62517",
+    "timestamp": "2026-04-29 08:06:28"
+  },
+  {
+    "age": "35",
+    "sexe": "Masculin",
+    "region": "Centre",
+    "poids": "75",
+    "taille": "175",
+    "tension_sys": "120",
+    "tension_dia": "80",
+    "pathologie": "Hypertension",
+    "acces_soin": "Bon",
+    "assurance": "CNPS",
+    "id": "7172c881",
+    "timestamp": "2026-04-29 08:06:28"
+  }
+]

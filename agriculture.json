@@ -1,0 +1,72 @@
+[
+  {
+    "region": "Ouest",
+    "superficie": "2",
+    "culture": "Maïs",
+    "rendement": "3.5",
+    "pluviometrie": "Bonne",
+    "irrigation": "Non",
+    "engrais": "Organique",
+    "revenu_mensuel": "85000",
+    "appartenance_coop": "Oui",
+    "formation_agri": "Oui informelle",
+    "id": "e9cd6a30",
+    "timestamp": "2026-04-29 08:06:28"
+  },
+  {
+    "region": "Ouest",
+    "superficie": "2",
+    "culture": "Maïs",
+    "rendement": "3.5",
+    "pluviometrie": "Bonne",
+    "irrigation": "Non",
+    "engrais": "Organique",
+    "revenu_mensuel": "85000",
+    "appartenance_coop": "Oui",
+    "formation_agri": "Oui informelle",
+    "id": "9f2bf3b0",
+    "timestamp": "2026-04-29 08:06:28"
+  },
+  {
+    "region": "Ouest",
+    "superficie": "2",
+    "culture": "Maïs",
+    "rendement": "3.5",
+    "pluviometrie": "Bonne",
+    "irrigation": "Non",
+    "engrais": "Organique",
+    "revenu_mensuel": "85000",
+    "appartenance_coop": "Oui",
+    "formation_agri": "Oui informelle",
+    "id": "32467444",
+    "timestamp": "2026-04-29 08:06:28"
+  },
+  {
+    "region": "Ouest",
+    "superficie": "2",
+    "culture": "Maïs",
+    "rendement": "3.5",
+    "pluviometrie": "Bonne",
+    "irrigation": "Non",
+    "engrais": "Organique",
+    "revenu_mensuel": "85000",
+    "appartenance_coop": "Oui",
+    "formation_agri": "Oui informelle",
+    "id": "9084990f",
+    "timestamp": "2026-04-29 08:06:28"
+  },
+  {
+    "region": "Ouest",
+    "superficie": "2",
+    "culture": "Maïs",
+    "rendement": "3.5",
+    "pluviometrie": "Bonne",
+    "irrigation": "Non",
+    "engrais": "Organique",
+    "revenu_mensuel": "85000",
+    "appartenance_coop": "Oui",
+    "formation_agri": "Oui informelle",
+    "id": "518aead9",
+    "timestamp": "2026-04-29 08:06:28"
+  }
+]

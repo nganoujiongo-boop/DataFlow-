@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: dataflow-inf232
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --workers 2
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+    disk:
+      name: data
+      mountPath: /opt/render/project/src/data
+      sizeGB: 1

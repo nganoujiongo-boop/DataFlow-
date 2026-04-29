@@ -1,0 +1,72 @@
+[
+  {
+    "age_eleve": "15",
+    "sexe": "Féminin",
+    "niveau": "Collège",
+    "region": "Littoral",
+    "type_ecole": "Public",
+    "note_maths": "14",
+    "note_francais": "16",
+    "note_sciences": "13",
+    "absences": "2",
+    "acces_internet": "Non",
+    "id": "11852d44",
+    "timestamp": "2026-04-29 08:06:28"
+  },
+  {
+    "age_eleve": "15",
+    "sexe": "Féminin",
+    "niveau": "Collège",
+    "region": "Littoral",
+    "type_ecole": "Public",
+    "note_maths": "14",
+    "note_francais": "16",
+    "note_sciences": "13",
+    "absences": "2",
+    "acces_internet": "Non",
+    "id": "1b77e19a",
+    "timestamp": "2026-04-29 08:06:28"
+  },
+  {
+    "age_eleve": "15",
+    "sexe": "Féminin",
+    "niveau": "Collège",
+    "region": "Littoral",
+    "type_ecole": "Public",
+    "note_maths": "14",
+    "note_francais": "16",
+    "note_sciences": "13",
+    "absences": "2",
+    "acces_internet": "Non",
+    "id": "95df76ee",
+    "timestamp": "2026-04-29 08:06:28"
+  },
+  {
+    "age_eleve": "15",
+    "sexe": "Féminin",
+    "niveau": "Collège",
+    "region": "Littoral",
+    "type_ecole": "Public",
+    "note_maths": "14",
+    "note_francais": "16",
+    "note_sciences": "13",
+    "absences": "2",
+    "acces_internet": "Non",
+    "id": "28f2b2ba",
+    "timestamp": "2026-04-29 08:06:28"
+  },
+  {
+    "age_eleve": "15",
+    "sexe": "Féminin",
+    "niveau": "Collège",
+    "region": "Littoral",
+    "type_ecole": "Public",
+    "note_maths": "14",
+    "note_francais": "16",
+    "note_sciences": "13",
+    "absences": "2",
+    "acces_internet": "Non",
+    "id": "fc7e58c2",
+    "timestamp": "2026-04-29 08:06:28"
+  }
+]
